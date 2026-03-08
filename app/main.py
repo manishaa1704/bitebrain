@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.routers import auth
+from app.routers import auth, ingredients
 import app.models
 
 app = FastAPI(
@@ -12,7 +12,8 @@ app = FastAPI(
 Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
+app.include_router(ingredients.router)
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to BiteBrain API"}
+    return {"message": "Welcome to BiteBrain API 🧠🍴"}
