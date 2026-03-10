@@ -1,7 +1,7 @@
 import asyncio
 from mcp.server.fastmcp import FastMCP
 from sqlalchemy.orm import Session
-from app.database import SessionLocal, init_db
+from app.database import SessionLocal
 from app.models.ingredient import Ingredient
 from app.models.recipe import Recipe
 
@@ -52,5 +52,4 @@ def get_recipes() -> str:
         db.close()
 
 if __name__ == "__main__":
-    init_db()
     mcp.run(transport='stdio')
