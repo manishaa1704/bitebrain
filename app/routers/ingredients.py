@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+import json
+import urllib.request
+import urllib.parse
 from app.database import get_db
 from app.models.ingredient import Ingredient
 from app.schemas.ingredient import IngredientCreate, IngredientUpdate, IngredientResponse
@@ -55,46 +58,53 @@ def create_ingredient(
     ])
     
     if needs_data:
-        import httpx
         try:
-            # Search OpenFoodFacts UK database
-            response = httpx.get(
-                f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={ingredient_data.name}&search_simple=1&action=process&json=1&page_size=1",
-                timeout=5.0
-            )
-            data = response.json()
+            # Search OpenFoodFacts database - gives macros for free from public food data!
+            url = f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={urllib.parse.quote(ingredient_data.name)}&search_simple=1&action=process&json=1&page_size=1"
+            req = urllib.request.Request(url, headers={"User-Agent": "BiteBrainAPI/1.0"})
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                data = json.loads(resp.read().decode())
             
             if data.get('products') and len(data['products']) > 0:
                 product = data['products'][0]
                 nutriments = product.get('nutriments', {})
                 
-                # Update missing fields with real-world data
+                # Update missing fields with real-world data from OpenFoodFacts
                 if ingredient_dict.get('calories_per_100g') is None:
-                    kcal = nutriments.get('energy-kcal_100g')
-                    ingredient_dict['calories_per_100g'] = float(kcal) if kcal is not None else 0.0
+                    kcal = nutriments.get('energy-kcal_100g') or nutriments.get('energy-kcal')
+                    if kcal is not None:
+                        kcal = float(kcal)
+                        # Sanity check: if value > 900 it was likely stored as kJ (max real kcal is ~900 for pure fat)
+                        if kcal > 900:
+                            kcal = round(kcal / 4.184, 1)
+                    else:
+                        # Fall back to converting raw energy_100g (kJ) to kcal
+                        kj = nutriments.get('energy_100g') or nutriments.get('energy')
+                        kcal = round(float(kj) / 4.184, 1) if kj is not None else 0.0
+                    ingredient_dict['calories_per_100g'] = kcal
                     
                 if ingredient_dict.get('protein_per_100g') is None:
-                    protein = nutriments.get('proteins_100g')
+                    protein = nutriments.get('proteins_100g') or nutriments.get('proteins')
                     ingredient_dict['protein_per_100g'] = float(protein) if protein is not None else 0.0
                     
                 if ingredient_dict.get('carbs_per_100g') is None:
-                    carbs = nutriments.get('carbohydrates_100g')
+                    carbs = nutriments.get('carbohydrates_100g') or nutriments.get('carbohydrates')
                     ingredient_dict['carbs_per_100g'] = float(carbs) if carbs is not None else 0.0
                     
                 if ingredient_dict.get('fat_per_100g') is None:
-                    fat = nutriments.get('fat_100g')
+                    fat = nutriments.get('fat_100g') or nutriments.get('fat')
                     ingredient_dict['fat_per_100g'] = float(fat) if fat is not None else 0.0
                     
-                # Optionally capture allergens if not provided
+                # Capture allergens if not provided
                 if ingredient_dict.get('allergens') is None and product.get('allergens'):
                     ingredient_dict['allergens'] = product.get('allergens').replace('en:', '').replace(',', ', ')
                     
         except Exception as e:
+            print(f"OpenFoodFacts lookup failed: {e}")
             # If API fails or times out, default to 0.0 to prevent database errors
-            if ingredient_dict.get('calories_per_100g') is None: ingredient_dict['calories_per_100g'] = 0.0
-            if ingredient_dict.get('protein_per_100g') is None: ingredient_dict['protein_per_100g'] = 0.0
-            if ingredient_dict.get('carbs_per_100g') is None: ingredient_dict['carbs_per_100g'] = 0.0
-            if ingredient_dict.get('fat_per_100g') is None: ingredient_dict['fat_per_100g'] = 0.0
+            for field in ['calories_per_100g', 'protein_per_100g', 'carbs_per_100g', 'fat_per_100g']:
+                if ingredient_dict.get(field) is None:
+                    ingredient_dict[field] = 0.0
 
     ingredient = Ingredient(**ingredient_dict)
     db.add(ingredient)
