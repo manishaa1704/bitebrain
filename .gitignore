@@ -3,4 +3,10 @@ __pycache__/
 *.pyc
 .env
 *.db
-.DS_Store.idea/
+.DS_Store
+.idea/
+alembic/.DS_Store
+app/.DS_Store
+app/auth/.DS_Store
+COMP3011_Coursework1_Brief__2025_2026.pdf
+brief_text.txt
