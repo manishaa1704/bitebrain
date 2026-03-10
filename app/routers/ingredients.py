@@ -43,8 +43,60 @@ def create_ingredient(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ingredient with this name already exists"
         )
+        
+    ingredient_dict = ingredient_data.model_dump()
+    
+    # Check if we need to fetch from OpenFoodFacts
+    needs_data = any(x is None for x in [
+        ingredient_dict.get('calories_per_100g'),
+        ingredient_dict.get('protein_per_100g'),
+        ingredient_dict.get('carbs_per_100g'),
+        ingredient_dict.get('fat_per_100g')
+    ])
+    
+    if needs_data:
+        import httpx
+        try:
+            # Search OpenFoodFacts UK database
+            response = httpx.get(
+                f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={ingredient_data.name}&search_simple=1&action=process&json=1&page_size=1",
+                timeout=5.0
+            )
+            data = response.json()
+            
+            if data.get('products') and len(data['products']) > 0:
+                product = data['products'][0]
+                nutriments = product.get('nutriments', {})
+                
+                # Update missing fields with real-world data
+                if ingredient_dict.get('calories_per_100g') is None:
+                    kcal = nutriments.get('energy-kcal_100g')
+                    ingredient_dict['calories_per_100g'] = float(kcal) if kcal is not None else 0.0
+                    
+                if ingredient_dict.get('protein_per_100g') is None:
+                    protein = nutriments.get('proteins_100g')
+                    ingredient_dict['protein_per_100g'] = float(protein) if protein is not None else 0.0
+                    
+                if ingredient_dict.get('carbs_per_100g') is None:
+                    carbs = nutriments.get('carbohydrates_100g')
+                    ingredient_dict['carbs_per_100g'] = float(carbs) if carbs is not None else 0.0
+                    
+                if ingredient_dict.get('fat_per_100g') is None:
+                    fat = nutriments.get('fat_100g')
+                    ingredient_dict['fat_per_100g'] = float(fat) if fat is not None else 0.0
+                    
+                # Optionally capture allergens if not provided
+                if ingredient_dict.get('allergens') is None and product.get('allergens'):
+                    ingredient_dict['allergens'] = product.get('allergens').replace('en:', '').replace(',', ', ')
+                    
+        except Exception as e:
+            # If API fails or times out, default to 0.0 to prevent database errors
+            if ingredient_dict.get('calories_per_100g') is None: ingredient_dict['calories_per_100g'] = 0.0
+            if ingredient_dict.get('protein_per_100g') is None: ingredient_dict['protein_per_100g'] = 0.0
+            if ingredient_dict.get('carbs_per_100g') is None: ingredient_dict['carbs_per_100g'] = 0.0
+            if ingredient_dict.get('fat_per_100g') is None: ingredient_dict['fat_per_100g'] = 0.0
 
-    ingredient = Ingredient(**ingredient_data.model_dump())
+    ingredient = Ingredient(**ingredient_dict)
     db.add(ingredient)
     db.commit()
     db.refresh(ingredient)

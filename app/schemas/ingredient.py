@@ -4,10 +4,10 @@ from typing import Optional
 class IngredientCreate(BaseModel):
     """Schema for creating an ingredient"""
     name: str
-    calories_per_100g: float
-    protein_per_100g: float
-    carbs_per_100g: float
-    fat_per_100g: float
+    calories_per_100g: Optional[float] = None
+    protein_per_100g: Optional[float] = None
+    carbs_per_100g: Optional[float] = None
+    fat_per_100g: Optional[float] = None
     cost_per_100g: Optional[float] = None
     is_vegetarian: bool = True
     is_vegan: bool = False
