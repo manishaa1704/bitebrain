@@ -89,7 +89,7 @@ def substitute_ingredient(
 ):
     """
     AI-powered ingredient substitution suggestions.
-    Uses Claude AI to suggest the best substitutes based on your reason
+    Uses Gemini AI to suggest the best substitutes based on your reason
     (e.g. vegan, allergy, lower calories, cheaper).
     Requires authentication.
     """
