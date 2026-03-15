@@ -14,8 +14,7 @@ class RecipeIngredientResponse(BaseModel):
     quantity_grams: float
     ingredient: IngredientResponse
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class RecipeCreate(BaseModel):
     """Schema for creating a recipe"""
@@ -41,5 +40,4 @@ class RecipeResponse(BaseModel):
     servings: int
     ingredients: List[RecipeIngredientResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}

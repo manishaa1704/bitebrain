@@ -1,4 +1,4 @@
-import google.generativeai as genai
+from google import genai
 import json
 import os
 from dotenv import load_dotenv
@@ -7,7 +7,7 @@ from app.models.ingredient import Ingredient
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def get_ingredient_substitutions(
         ingredient_name: str,
@@ -77,8 +77,10 @@ Respond ONLY with a valid JSON object in exactly this format:
     "general_advice": "overall advice for this substitution"
 }}"""
 
-    model = genai.GenerativeModel('gemini-2.5-flash')
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
     response_text = response.text
 
     # Clean up response in case there are markdown code blocks

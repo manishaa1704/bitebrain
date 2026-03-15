@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import patch
+import json
+from unittest.mock import patch, MagicMock
 from fastapi import status
 
 def test_get_nutrition_summary(client):
@@ -14,12 +15,9 @@ def test_popular_ingredients_empty(client):
     assert response.status_code == status.HTTP_200_OK
     assert "message" in response.json()
 
-@patch('app.services.ai_substitution.genai.GenerativeModel.generate_content')
-def test_substitute_ingredient(mock_generate_content, client):
-    # Mock the Gemini API response
-    class MockResponse:
-        def __init__(self, text):
-            self.text = text
+@patch('app.services.ai_substitution.client')
+def test_substitute_ingredient(mock_client, client):
+    """Test AI substitution endpoint with mocked Gemini client"""
 
     mock_response_data = {
         "original_ingredient": "butter",
@@ -37,21 +35,21 @@ def test_substitute_ingredient(mock_generate_content, client):
         "general_advice": "coconut oil works well for baking"
     }
 
-    import json
-    mock_generate_content.return_value = MockResponse(
-        text=f"```json\n{json.dumps(mock_response_data)}\n```"
-    )
+    # Mock the new google-genai client response
+    mock_response = MagicMock()
+    mock_response.text = json.dumps(mock_response_data)
+    mock_client.models.generate_content.return_value = mock_response
 
     request_data = {
         "ingredient_name": "butter",
         "reason": "vegan",
         "recipe_context": "baking a cake"
     }
-    
+
     response = client.post("/analytics/substitute", json=request_data)
-    
+
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["original_ingredient"] == "butter"
     assert len(data["suggestions"]) == 1
-    assert mock_generate_content.called
+    assert mock_client.models.generate_content.called

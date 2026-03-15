@@ -14,8 +14,7 @@ class MealPlanRecipeResponse(BaseModel):
     day_of_week: Optional[str]
     meal_type: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class MealPlanCreate(BaseModel):
     """Schema for creating a meal plan"""
@@ -35,5 +34,4 @@ class MealPlanResponse(BaseModel):
     owner_id: int
     recipes: List[MealPlanRecipeResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
