@@ -2,6 +2,11 @@
 
 BiteBrain is a high-performance, AI-integrated nutrition intelligence API. It provides a robust platform for managing personal nutrition, recipes, and meal planning, enhanced by real-world data integration and cutting-edge Model Context Protocol (MCP) support.
 
+## 🌐 Live API
+- **Base URL**: https://bitebrain.onrender.com
+- **Swagger UI**: https://bitebrain.onrender.com/docs
+- **ReDoc**: https://bitebrain.onrender.com/redoc
+
 Developed as part of the **COMP3011 Web Services API Development** coursework at the University of Leeds.
 
 ## 🚀 Key Features
