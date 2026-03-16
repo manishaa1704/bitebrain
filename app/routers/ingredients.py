@@ -62,7 +62,7 @@ def create_ingredient(
             # Search OpenFoodFacts database - gives macros for free from public food data!
             url = f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={urllib.parse.quote(ingredient_data.name)}&search_simple=1&action=process&json=1&page_size=1"
             req = urllib.request.Request(url, headers={"User-Agent": "BiteBrainAPI/1.0"})
-            with urllib.request.urlopen(req, timeout=20) as resp:
+            with urllib.request.urlopen(req, timeout=60) as resp:
                 data = json.loads(resp.read().decode())
             
             if data.get('products') and len(data['products']) > 0:
