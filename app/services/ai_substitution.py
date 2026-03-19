@@ -87,7 +87,7 @@ Respond ONLY with a valid JSON object in exactly this format:
     )
     def _call_gemini():
         return client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             contents=prompt
         )
 
