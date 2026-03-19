@@ -1,10 +1,8 @@
 # Technical Report: BiteBrain API
 **Module**: COMP3011 Web Services and Web Data  
-**Student**: Manishaa  
-**University**: University of Leeds  
+**Student**: Manishaa Manickavasagam
 **Live API**: https://bitebrain.onrender.com  
 **GitHub**: https://github.com/manishaa1704/bitebrain  
-**API Documentation**: See API_Documentation.pdf in repository  
 
 ---
 
