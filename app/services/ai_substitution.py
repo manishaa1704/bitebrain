@@ -1,4 +1,6 @@
 from google import genai
+from google.genai.errors import APIError
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 import json
 import os
 from dotenv import load_dotenv
@@ -77,10 +79,19 @@ Respond ONLY with a valid JSON object in exactly this format:
     "general_advice": "overall advice for this substitution"
 }}"""
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((APIError, Exception)),
+        reraise=True
     )
+    def _call_gemini():
+        return client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+
+    response = _call_gemini()
     response_text = response.text
 
     # Clean up response in case there are markdown code blocks

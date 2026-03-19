@@ -13,7 +13,11 @@ class MealPlan(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     owner = relationship("User", back_populates="meal_plans")
-    recipes = relationship("MealPlanRecipe", back_populates="meal_plan")
+    recipes = relationship(
+        "MealPlanRecipe",
+        back_populates="meal_plan",
+        cascade="all, delete-orphan"
+    )
 
 
 class MealPlanRecipe(Base):

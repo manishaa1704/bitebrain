@@ -13,8 +13,16 @@ class Recipe(Base):
     servings = Column(Integer, default=1)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    ingredients = relationship("RecipeIngredient", back_populates="recipe")
-    meal_plan_recipes = relationship("MealPlanRecipe", back_populates="recipe")
+    ingredients = relationship(
+        "RecipeIngredient",
+        back_populates="recipe",
+        cascade="all, delete-orphan"
+    )
+    meal_plan_recipes = relationship(
+        "MealPlanRecipe",
+        back_populates="recipe",
+        cascade="all, delete-orphan"
+    )
 
 
 class RecipeIngredient(Base):
