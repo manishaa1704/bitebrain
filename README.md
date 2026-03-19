@@ -2,14 +2,14 @@
 
 BiteBrain is a high-performance, AI-integrated nutrition intelligence API. It provides a robust platform for managing personal nutrition, recipes, and meal planning, enhanced by real-world data integration and cutting-edge Model Context Protocol (MCP) support.
 
-## 🌐 Live API
+##  Live API
 - **Base URL**: https://bitebrain.onrender.com
 - **Swagger UI**: https://bitebrain.onrender.com/docs
 - **ReDoc**: https://bitebrain.onrender.com/redoc
 
 Developed as part of the **COMP3011 Web Services API Development** coursework at the University of Leeds.
 
-## 🚀 Key Features
+##  Key Features
 
 - **Smart Ingredient Management**: CRUD operations for ingredients with automatic nutritional data fetching via the **OpenFoodFacts API**.
 - **Dynamic Recipe Engine**: Build complex recipes from multiple ingredients with automatic total macro and cost calculation.
@@ -18,7 +18,7 @@ Developed as part of the **COMP3011 Web Services API Development** coursework at
 - **AI-Native Integration**: Fully compatible **MCP Server** implementation for seamless interaction with AI assistants (Claude, Cursor, etc.).
 - **Professional Deployment**: Containerized with **Docker** and **Docker Compose** for consistent environment behavior.
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **Backend**: FastAPI (Python 3.12)
 - **Database**: SQLite with SQLAlchemy ORM
@@ -27,7 +27,7 @@ Developed as part of the **COMP3011 Web Services API Development** coursework at
 - **Deployment**: Docker / Docker Compose
 - **Testing**: Pytest with automated test suite
 
-## 📋 Setup Instructions
+##  Setup Instructions
 
 ### 1. Prerequisites
 - Python 3.12+
@@ -72,19 +72,19 @@ Developed as part of the **COMP3011 Web Services API Development** coursework at
 docker compose up --build
 ```
 
-## 🧪 Testing
+##  Testing
 The project includes a comprehensive test suite (17+ tests) covering all core logic.
 ```bash
 PYTHONPATH=. pytest tests/ -v
 ```
 
-## 🤖 Model Context Protocol (MCP)
+##  Model Context Protocol (MCP)
 To run the BiteBrain MCP server for use with AI assistants:
 ```bash
 PYTHONPATH=. python app/mcp_server.py
 ```
 
-## 📄 Documentation
+##  Documentation
 - **Technical Report**: [Technical_Report.pdf](./Technical_Report.pdf) (Contains design justification and GenAI declaration)
 - **API Reference**: [API_Documentation.pdf](./API_Documentation.pdf) (Detailed endpoint schema and examples)
 - **Presentation Outline**: [Presentation_Outline.md](./Presentation_Outline.md)
