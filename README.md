@@ -1,4 +1,4 @@
-# BiteBrain API 🍎🧠
+# BiteBrain API
 
 BiteBrain is a high-performance, AI-integrated nutrition intelligence API. It provides a robust platform for managing personal nutrition, recipes, and meal planning, enhanced by real-world data integration and cutting-edge Model Context Protocol (MCP) support.
 
