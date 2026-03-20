@@ -2,21 +2,21 @@
 
 Welcome to the official API documentation for **BiteBrain**, a cutting-edge nutrition intelligence platform. 
 
-## 🌟 Introduction
+## Introduction
 The BiteBrain API enables developers to build sophisticated health and nutrition applications. Key highlights include:
 - **Relational Data Integrity**: Strict validation for recipes and ingredients.
 - **AI-First Design**: Native integration with Google Gemini for culinary reasoning.
 - **Real-World Integration**: Automated nutritional data sourcing from OpenFoodFacts.
 - **Developer Friendly**: Built with FastAPI for high performance and standard compliance.
 
-## 🚀 Getting Started
+## Getting Started
 1. **Base URL**: `http://localhost:8000`
 2. **Authentication**: All modifying endpoints require a Bearer Token (JWT).
 3. **Formats**: The API exclusively uses JSON for requests and responses.
 
 ---
 
-## 🛠 Endpoint Reference
+## Endpoint Reference
 
 
 ## `POST /auth/register`

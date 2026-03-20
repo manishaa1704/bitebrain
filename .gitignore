@@ -9,4 +9,8 @@ alembic/.DS_Store
 app/.DS_Store
 app/auth/.DS_Store
 COMP3011_Coursework1_Brief__2025_2026.pdf
+brief_text.txt*.html
 brief_text.txt
+generate_docs.py
+COMP3011_Coursework1_Brief__2025_2026.pdf
+bitebrain.db
