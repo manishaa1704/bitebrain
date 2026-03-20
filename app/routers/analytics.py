@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.nutrition import (
@@ -12,6 +14,7 @@ from app.schemas.analytics import SubstitutionRequest
 from app.dependencies import get_current_user
 from app.models.user import User
 
+limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
 
@@ -82,22 +85,24 @@ def nutrition_summary(db: Session = Depends(get_db)):
 
 
 @router.post("/substitute")
+@limiter.limit("10/minute")
 def substitute_ingredient(
-    request: SubstitutionRequest,
+    request: Request,
+    substitution: SubstitutionRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
     AI-powered ingredient substitution suggestions.
-    Uses Gemini AI to suggest the best substitutes based on your reason
-    (e.g. vegan, allergy, lower calories, cheaper).
+    Uses Gemini AI to suggest the best substitutes based on your reason.
+    Rate limited to 10 requests per minute to prevent API abuse.
     Requires authentication.
     """
     try:
         result = get_ingredient_substitutions(
-            ingredient_name=request.ingredient_name,
-            reason=request.reason,
-            recipe_context=request.recipe_context,
+            ingredient_name=substitution.ingredient_name,
+            reason=substitution.reason,
+            recipe_context=substitution.recipe_context,
             db=db
         )
         return result

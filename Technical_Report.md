@@ -1,4 +1,4 @@
-# Technical Report: BiteBrain API 🍎🧠
+# Technical Report: BiteBrain API
 **Module**: COMP3011 Web Services and Web Data  
 **Student**: Manishaa  
 **University**: University of Leeds  
