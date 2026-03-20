@@ -1,9 +1,13 @@
 # Technical Report: BiteBrain API
 **Module**: COMP3011 Web Services and Web Data  
 **Student**: Manishaa Manickavasagam
-
+**Student ID**: 201895972
 **Live API**: https://bitebrain.onrender.com  
 **GitHub**: https://github.com/manishaa1704/bitebrain  
+**Swagger UI**: https://bitebrain.onrender.com/docs
+**Presentation Slides**:
+**API Documentation PDF**: Available in GitHub repository "API_Documentation.pdf"
+**Conversation Logs**: See Appendix A
 
 ---
 
@@ -14,10 +18,10 @@ for intelligent nutrition management, recipe construction, and
 personalised meal planning. The system goes beyond basic CRUD 
 functionality by integrating real-world nutritional data sourcing, 
 LLM-powered ingredient substitution, and native Model Context Protocol 
-(MCP) support — enabling seamless interaction with modern AI assistants.
+(MCP) support, enabling seamless interaction with modern AI assistants.
 
 The project was developed using an iterative, commit-driven workflow 
-across 10 days, reflecting real-world software engineering practice. 
+across 2 weeks, reflecting real-world software engineering practice. 
 All design decisions were made with scalability, modularity, and 
 examiner-facing clarity in mind.
 
@@ -75,16 +79,14 @@ Its performance benchmarks consistently outperform Django for API
 workloads. The rapid development cycle was also critical given the 
 project timeline.
 
-### SQLite + SQLAlchemy ORM
-SQLite was selected for its zero-configuration setup during development,
-while SQLAlchemy's ORM abstraction means migrating to PostgreSQL for 
-production requires only a single environment variable change — no 
-code modifications. The relational model was essential for this project 
-given the many-to-many relationships between recipes and ingredients. 
-A NoSQL database such as MongoDB was considered but rejected because 
-the structured, relational nature of nutritional data (ingredients 
-belonging to multiple recipes with specific quantities) is better 
-served by a relational schema with enforced constraints.
+### SQLite (development) / PostgreSQL (production via Render)
+
+SQLite was used during local development for its zero-configuration 
+setup. SQLAlchemy's ORM abstraction enabled seamless migration to 
+PostgreSQL for production deployment, requiring only a single 
+environment variable change with zero code modifications. This 
+demonstrates the value of the ORM abstraction pattern for environment 
+portability.
 
 ### JWT Authentication
 JSON Web Tokens were chosen for stateless authentication. Unlike 
@@ -92,7 +94,7 @@ session-based authentication, JWT requires no server-side session
 storage, making the API horizontally scalable. Passwords are hashed 
 using bcrypt before storage — plain text passwords are never persisted.
 
-### Google Gemini 2.0 Flash
+### Google Gemini 2.5 Flash
 The Gemini API was integrated for the AI ingredient substitution 
 endpoint. Rather than maintaining a static substitution lookup table, 
 Gemini reasons about culinary context, dietary restrictions, and 
@@ -125,7 +127,7 @@ API is unavailable.
 BiteBrain implements a native MCP server (`app/mcp_server.py`) using 
 the official `mcp` Python SDK. This exposes BiteBrain's core 
 functionality as native tools for AI assistants such as Claude Desktop 
-and Cursor. This represents a genuinely cutting-edge integration — MCP 
+and Cursor. This represents a genuinely cutting-edge integration, MCP 
 was introduced by Anthropic in late 2024 and represents an emerging 
 standard for AI-to-API communication. The implementation positions 
 BiteBrain as an AI-native API rather than merely an API with AI 
@@ -145,6 +147,16 @@ intelligence: macro breakdowns per serving, allergen detection across
 recipe ingredients, cost estimation, and ingredient popularity trends 
 across all recipes. These are computed dynamically from the relational 
 database using SQLAlchemy aggregate queries.
+
+### Rate Limiting**
+The `/analytics/substitute` endpoint is protected by slowapi rate limiting at 10 requests per minute per IP address, 
+preventing Gemini API quota exhaustion and abuse from automated 
+scripts.
+
+### Input Validation
+Pydantic V2 field validators enforce business logic constraints on all ingredient data — rejecting negative calorie 
+values, names exceeding 200 characters, and macro values exceeding 
+physically possible limits per 100g.
 
 ---
 
@@ -197,18 +209,25 @@ was an important lesson in understanding the difference between API
 authentication standards.
 
 **Database Portability**: Ensuring the SQLAlchemy configuration worked 
-correctly for both local SQLite development and potential PostgreSQL 
-production deployment required careful management of connection 
-arguments, particularly the `check_same_thread` parameter which is 
-SQLite-specific.
+correctly for both local SQLite development and PostgreSQL production 
+deployment required careful management of connection arguments, 
+particularly the `check_same_thread` parameter which is SQLite-specific 
+and must be conditionally applied. This was resolved by detecting the 
+database type from the connection URL and applying the appropriate 
+configuration dynamically. The migration to PostgreSQL on Render was 
+ultimately seamless — requiring only a single environment variable 
+change with zero code modifications, validating the ORM abstraction 
+approach.
 
 ---
 
 ## 7. Limitations and Future Development
 
-**Database**: SQLite is not suitable for concurrent production traffic. 
-Migrating to PostgreSQL on a managed service such as Supabase or 
-Railway would be the immediate next step for production deployment.
+**Database**: SQLite is used for local development due to its 
+zero-configuration setup. PostgreSQL has been deployed in production 
+via Render, providing concurrent request handling and persistent 
+storage. Future improvement would involve using PostgreSQL consistently 
+across both development and production environments.
 
 **MCP Server Scope**: The current MCP implementation is read-only. 
 Future development would expose write operations (creating ingredients 
@@ -223,9 +242,10 @@ ingredients would significantly improve response times.
 UI. A React or Next.js dashboard displaying nutritional analytics 
 visually would greatly improve accessibility.
 
-**Rate Limiting**: The API currently has no rate limiting on endpoints. 
-Implementing rate limiting using `slowapi` would prevent abuse of the 
-AI substitution endpoint, which incurs Gemini API costs per request.
+**Rate Limiting**: Rate limiting has been implemented on the AI 
+substitution endpoint using `slowapi`, restricting requests to 10 
+per minute per IP address. Future work would extend rate limiting 
+to all endpoints.
 
 ---
 
@@ -264,6 +284,15 @@ docstrings, and synthesising this technical report.
 **Conversation Logs**: Exported conversation logs are included as 
 Appendix A of this report.
 
+**AI-Driven Improvements**: Critical evaluation through structured AI 
+dialogue identified several architectural weaknesses including missing 
+rate limiting, absent input validation, and synchronous external HTTP 
+calls. Rate limiting and field validation were immediately implemented 
+based on these recommendations. Remaining improvements including Redis 
+caching and async HTTP calls were consciously deferred to a future 
+iteration due to project timeline constraints — demonstrating 
+deliberate prioritisation rather than blind implementation.
+
 ---
 
 ## 9. References
@@ -283,6 +312,21 @@ https://ai.google.dev/gemini-api/docs
 
 ---
 
+## 10. Appendix A: Generative AI Conversation Screenshots
+The following screenshots demonstrate the creative and 
+methodological application of Generative AI throughout this project.
+Conversations are from Claude (Anthropic) and cover:
+1. Architectural decision-making (REST vs GraphQL vs MCP comparison)
+2. Creative AI integration approaches for nutrition APIs
+3. MCP implementation guidance and paradigm analysis
+4. Database design trade-off evaluation
+5. Authentication mechanism comparison
+6. Critical stack evaluation and weakness identification
+7. Future innovation exploration
+
+
+
+---
 *This report was prepared in accordance with the COMP3011 coursework 
 requirements. All GenAI usage has been declared above and conversation 
 logs are attached as supplementary material.*

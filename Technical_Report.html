@@ -108,13 +108,16 @@
                     
                     <div class="Box-body px-5 pb-5">
                       <article id="grip-content" class="markdown-body entry-content container-lg">
-                        <div class="markdown-heading"><h1 class="heading-element">Technical Report: BiteBrain API 🍎🧠</h1><a id="user-content-technical-report-bitebrain-api-" class="anchor" aria-label="Permalink: Technical Report: BiteBrain API 🍎🧠" href="#technical-report-bitebrain-api-"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+                        <div class="markdown-heading"><h1 class="heading-element">Technical Report: BiteBrain API</h1><a id="user-content-technical-report-bitebrain-api" class="anchor" aria-label="Permalink: Technical Report: BiteBrain API" href="#technical-report-bitebrain-api"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p><strong>Module</strong>: COMP3011 Web Services and Web Data<br>
-<strong>Student</strong>: Manishaa<br>
-<strong>University</strong>: University of Leeds<br>
+<strong>Student</strong>: Manishaa Manickavasagam
+<strong>Student ID</strong>: 201895972
 <strong>Live API</strong>: <a href="https://bitebrain.onrender.com" rel="nofollow">https://bitebrain.onrender.com</a><br>
 <strong>GitHub</strong>: <a href="https://github.com/manishaa1704/bitebrain">https://github.com/manishaa1704/bitebrain</a><br>
-<strong>API Documentation</strong>: See API_Documentation.pdf in repository</p>
+<strong>Swagger UI</strong>: <a href="https://bitebrain.onrender.com/docs" rel="nofollow">https://bitebrain.onrender.com/docs</a>
+<strong>Presentation Slides</strong>:
+<strong>API Documentation PDF</strong>: Available in GitHub repository "API_Documentation.pdf"
+<strong>Conversation Logs</strong>: See Appendix A</p>
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">1. Introduction</h2><a id="user-content-1-introduction" class="anchor" aria-label="Permalink: 1. Introduction" href="#1-introduction"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>BiteBrain is a fully-featured, AI-enhanced RESTful web API designed
@@ -122,9 +125,9 @@ for intelligent nutrition management, recipe construction, and
 personalised meal planning. The system goes beyond basic CRUD
 functionality by integrating real-world nutritional data sourcing,
 LLM-powered ingredient substitution, and native Model Context Protocol
-(MCP) support — enabling seamless interaction with modern AI assistants.</p>
+(MCP) support, enabling seamless interaction with modern AI assistants.</p>
 <p>The project was developed using an iterative, commit-driven workflow
-across 10 days, reflecting real-world software engineering practice.
+across 2 weeks, reflecting real-world software engineering practice.
 All design decisions were made with scalability, modularity, and
 examiner-facing clarity in mind.</p>
 <hr>
@@ -175,22 +178,19 @@ has best-in-class support for modern Python type hints via Pydantic.
 Its performance benchmarks consistently outperform Django for API
 workloads. The rapid development cycle was also critical given the
 project timeline.</p>
-<div class="markdown-heading"><h3 class="heading-element">SQLite + SQLAlchemy ORM</h3><a id="user-content-sqlite--sqlalchemy-orm" class="anchor" aria-label="Permalink: SQLite + SQLAlchemy ORM" href="#sqlite--sqlalchemy-orm"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>SQLite was selected for its zero-configuration setup during development,
-while SQLAlchemy's ORM abstraction means migrating to PostgreSQL for
-production requires only a single environment variable change — no
-code modifications. The relational model was essential for this project
-given the many-to-many relationships between recipes and ingredients.
-A NoSQL database such as MongoDB was considered but rejected because
-the structured, relational nature of nutritional data (ingredients
-belonging to multiple recipes with specific quantities) is better
-served by a relational schema with enforced constraints.</p>
+<div class="markdown-heading"><h3 class="heading-element">SQLite (development) / PostgreSQL (production via Render)</h3><a id="user-content-sqlite-development--postgresql-production-via-render" class="anchor" aria-label="Permalink: SQLite (development) / PostgreSQL (production via Render)" href="#sqlite-development--postgresql-production-via-render"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>SQLite was used during local development for its zero-configuration
+setup. SQLAlchemy's ORM abstraction enabled seamless migration to
+PostgreSQL for production deployment, requiring only a single
+environment variable change with zero code modifications. This
+demonstrates the value of the ORM abstraction pattern for environment
+portability.</p>
 <div class="markdown-heading"><h3 class="heading-element">JWT Authentication</h3><a id="user-content-jwt-authentication" class="anchor" aria-label="Permalink: JWT Authentication" href="#jwt-authentication"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>JSON Web Tokens were chosen for stateless authentication. Unlike
 session-based authentication, JWT requires no server-side session
 storage, making the API horizontally scalable. Passwords are hashed
 using bcrypt before storage — plain text passwords are never persisted.</p>
-<div class="markdown-heading"><h3 class="heading-element">Google Gemini 2.0 Flash</h3><a id="user-content-google-gemini-20-flash" class="anchor" aria-label="Permalink: Google Gemini 2.0 Flash" href="#google-gemini-20-flash"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h3 class="heading-element">Google Gemini 2.5 Flash</h3><a id="user-content-google-gemini-25-flash" class="anchor" aria-label="Permalink: Google Gemini 2.5 Flash" href="#google-gemini-25-flash"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>The Gemini API was integrated for the AI ingredient substitution
 endpoint. Rather than maintaining a static substitution lookup table,
 Gemini reasons about culinary context, dietary restrictions, and
@@ -218,7 +218,7 @@ API is unavailable.</p>
 <p>BiteBrain implements a native MCP server (<code>app/mcp_server.py</code>) using
 the official <code>mcp</code> Python SDK. This exposes BiteBrain's core
 functionality as native tools for AI assistants such as Claude Desktop
-and Cursor. This represents a genuinely cutting-edge integration — MCP
+and Cursor. This represents a genuinely cutting-edge integration, MCP
 was introduced by Anthropic in late 2024 and represents an emerging
 standard for AI-to-API communication. The implementation positions
 BiteBrain as an AI-native API rather than merely an API with AI
@@ -236,6 +236,14 @@ intelligence: macro breakdowns per serving, allergen detection across
 recipe ingredients, cost estimation, and ingredient popularity trends
 across all recipes. These are computed dynamically from the relational
 database using SQLAlchemy aggregate queries.</p>
+<div class="markdown-heading"><h3 class="heading-element">Rate Limiting**</h3><a id="user-content-rate-limiting" class="anchor" aria-label="Permalink: Rate Limiting**" href="#rate-limiting"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>The <code>/analytics/substitute</code> endpoint is protected by slowapi rate limiting at 10 requests per minute per IP address,
+preventing Gemini API quota exhaustion and abuse from automated
+scripts.</p>
+<div class="markdown-heading"><h3 class="heading-element">Input Validation</h3><a id="user-content-input-validation" class="anchor" aria-label="Permalink: Input Validation" href="#input-validation"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Pydantic V2 field validators enforce business logic constraints on all ingredient data — rejecting negative calorie
+values, names exceeding 200 characters, and macro values exceeding
+physically possible limits per 100g.</p>
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">5. Testing Approach</h2><a id="user-content-5-testing-approach" class="anchor" aria-label="Permalink: 5. Testing Approach" href="#5-testing-approach"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>A comprehensive suite of 17 automated tests was developed using
@@ -275,15 +283,22 @@ updating the login endpoint to use <code>OAuth2PasswordRequestForm</code>. This
 was an important lesson in understanding the difference between API
 authentication standards.</p>
 <p><strong>Database Portability</strong>: Ensuring the SQLAlchemy configuration worked
-correctly for both local SQLite development and potential PostgreSQL
-production deployment required careful management of connection
-arguments, particularly the <code>check_same_thread</code> parameter which is
-SQLite-specific.</p>
+correctly for both local SQLite development and PostgreSQL production
+deployment required careful management of connection arguments,
+particularly the <code>check_same_thread</code> parameter which is SQLite-specific
+and must be conditionally applied. This was resolved by detecting the
+database type from the connection URL and applying the appropriate
+configuration dynamically. The migration to PostgreSQL on Render was
+ultimately seamless — requiring only a single environment variable
+change with zero code modifications, validating the ORM abstraction
+approach.</p>
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">7. Limitations and Future Development</h2><a id="user-content-7-limitations-and-future-development" class="anchor" aria-label="Permalink: 7. Limitations and Future Development" href="#7-limitations-and-future-development"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p><strong>Database</strong>: SQLite is not suitable for concurrent production traffic.
-Migrating to PostgreSQL on a managed service such as Supabase or
-Railway would be the immediate next step for production deployment.</p>
+<p><strong>Database</strong>: SQLite is used for local development due to its
+zero-configuration setup. PostgreSQL has been deployed in production
+via Render, providing concurrent request handling and persistent
+storage. Future improvement would involve using PostgreSQL consistently
+across both development and production environments.</p>
 <p><strong>MCP Server Scope</strong>: The current MCP implementation is read-only.
 Future development would expose write operations (creating ingredients
 and recipes) as MCP tools, enabling AI assistants to fully manage
@@ -294,9 +309,10 @@ ingredients would significantly improve response times.</p>
 <p><strong>Frontend</strong>: BiteBrain currently has no user interface beyond Swagger
 UI. A React or Next.js dashboard displaying nutritional analytics
 visually would greatly improve accessibility.</p>
-<p><strong>Rate Limiting</strong>: The API currently has no rate limiting on endpoints.
-Implementing rate limiting using <code>slowapi</code> would prevent abuse of the
-AI substitution endpoint, which incurs Gemini API costs per request.</p>
+<p><strong>Rate Limiting</strong>: Rate limiting has been implemented on the AI
+substitution endpoint using <code>slowapi</code>, restricting requests to 10
+per minute per IP address. Future work would extend rate limiting
+to all endpoints.</p>
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">8. Generative AI Declaration</h2><a id="user-content-8-generative-ai-declaration" class="anchor" aria-label="Permalink: 8. Generative AI Declaration" href="#8-generative-ai-declaration"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p><strong>Usage Level</strong>: Creative Application of Generative AI (90-100 band)</p>
@@ -324,6 +340,14 @@ docstrings, and synthesising this technical report.</p>
 <p><strong>Tools Used</strong>: Claude (Anthropic), Google Gemini<br>
 <strong>Conversation Logs</strong>: Exported conversation logs are included as
 Appendix A of this report.</p>
+<p><strong>AI-Driven Improvements</strong>: Critical evaluation through structured AI
+dialogue identified several architectural weaknesses including missing
+rate limiting, absent input validation, and synchronous external HTTP
+calls. Rate limiting and field validation were immediately implemented
+based on these recommendations. Remaining improvements including Redis
+caching and async HTTP calls were consciously deferred to a future
+iteration due to project timeline constraints — demonstrating
+deliberate prioritisation rather than blind implementation.</p>
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">9. References</h2><a id="user-content-9-references" class="anchor" aria-label="Permalink: 9. References" href="#9-references"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <ul>
@@ -350,6 +374,20 @@ Appendix A of this report.</p>
 <li>Alembic Documentation. <a href="https://alembic.sqlalchemy.org/" rel="nofollow">https://alembic.sqlalchemy.org/</a>
 </li>
 </ul>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">10. Appendix A: Generative AI Conversation Screenshots</h2><a id="user-content-10-appendix-a-generative-ai-conversation-screenshots" class="anchor" aria-label="Permalink: 10. Appendix A: Generative AI Conversation Screenshots" href="#10-appendix-a-generative-ai-conversation-screenshots"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>The following screenshots demonstrate the creative and
+methodological application of Generative AI throughout this project.
+Conversations are from Claude (Anthropic) and cover:</p>
+<ol>
+<li>Architectural decision-making (REST vs GraphQL vs MCP comparison)</li>
+<li>Creative AI integration approaches for nutrition APIs</li>
+<li>MCP implementation guidance and paradigm analysis</li>
+<li>Database design trade-off evaluation</li>
+<li>Authentication mechanism comparison</li>
+<li>Critical stack evaluation and weakness identification</li>
+<li>Future innovation exploration</li>
+</ol>
 <hr>
 <p><em>This report was prepared in accordance with the COMP3011 coursework
 requirements. All GenAI usage has been declared above and conversation
